@@ -88,7 +88,16 @@ mvn verify
 
 Repository CI also builds the Fabric client modules and Tauri/Svelte desktop application before packaging integration artifacts.
 
-A green source/CI build proves compilation and automated tests only. Before a stable release, validate the real runtime path on a disposable Paper 1.21.4 server:
+After source verification, run the disposable Paper smoke proof with a known Paper 1.21.4 server JAR:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/verify-paper-runtime.ps1 `
+  -ServerJar "E:\1.21.4\paper.jar"
+```
+
+The smoke harness stages only the freshly built Paper plugin artifacts into `.runtime-proof/paper-smoke/`, boots an isolated server, verifies both plugins reach their enabled state, then shuts the server down. It does not modify the existing live server. See `docs/05-operations/paper-runtime-smoke.md`.
+
+A green source/CI build plus smoke boot still does not prove world mutation. Before a stable release, validate the real runtime path on a disposable Paper 1.21.4 server:
 
 ```text
 boot
@@ -115,6 +124,7 @@ The canonical design and constraints live in:
 - `docs/02-world-management/README.md`
 - `docs/02-world-management/conversion.md`
 - `docs/04-system/world-task-contract.md`
+- `docs/05-operations/paper-runtime-smoke.md`
 
 Prefer extending an existing service over adding another manager, filesystem authority, executor, registry, conversion runtime, or transport-specific world-operation path.
 
